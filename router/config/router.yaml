@@ -1,0 +1,14 @@
+# router configuration meant for use with `rover dev`
+# this configuration provides the router with the
+# rhai script and can be further customized as needed
+
+# to use with rover dev, run from /src/router with:
+# rover dev --router-config config/router.yaml --supergraph-config config/supergraph.yaml
+
+# Rhai script hooks
+rhai:
+  # Rhai directory
+  scripts: rhai
+
+  # Enable script execution
+  main: main.rhai

@@ -1,0 +1,57 @@
+/**
+ * Subgraph Configuration
+ *
+ * This file defines configuration for all subgraphs in the federated GraphQL setup.
+ * Each subgraph can be configured with:
+ * - url: The endpoint URL (can use environment variables)
+ * - forceMock: Force mocking even if URL is available
+ * - disableMocking: Disable mocking entirely (passthrough only)
+ * - useLocalSchema: Use local schema file instead of fetching from Apollo
+ * - introspectionHeaders: Custom headers to send with introspection queries (e.g., authentication)
+ * - maxRetries: Maximum number of retries for health checks
+ * - retryDelayMs: Delay between retries in milliseconds
+ * - healthCheckIntervalMs: Interval for health checks in milliseconds
+ * - schemaFile: Path to the schema file
+ *
+ */
+
+/**
+ * Default configuration applied to all subgraphs unless overridden
+ */
+const defaultSubgraphConfig = {
+  forceMock: false,
+  disableMocking: false,
+  useLocalSchema: false,
+};
+
+/**
+ * Subgraph configurations
+ * @type {import('../src/config/subgraphConfig').SubgraphsConfig}
+ */
+export const config = {
+  subgraphs: {
+    accounts: {
+      ...defaultSubgraphConfig,
+      url: process.env.ACCOUNTS_URL,
+      // Example: Add custom headers for introspection queries
+      // Useful for authentication, API keys, or other required headers
+      introspectionHeaders: {
+        'authorization': `Bearer ${process.env.ACCOUNTS_TOKEN || 'default-token'}`,
+        'x-api-key': process.env.ACCOUNTS_API_KEY || '',
+      },
+    },
+    inventory: {
+      ...defaultSubgraphConfig,
+      url: process.env.INVENTORY_URL,
+    },
+    products: {
+      ...defaultSubgraphConfig,
+      url: process.env.PRODUCTS_URL,
+      forceMock: true, // Override: always mock products subgraph
+    },
+    reviews: {
+      ...defaultSubgraphConfig,
+      url: process.env.REVIEWS_URL,
+    },
+  },
+};

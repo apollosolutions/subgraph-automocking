@@ -1,0 +1,66 @@
+/**
+ * Centralized Mock Configuration
+ *
+ * This file defines mock resolvers for all subgraphs in the federated GraphQL setup.
+ *
+ * STRUCTURE:
+ * -----------
+ * The mocks object is organized into the following sections:
+ *
+ * 1. _globals: Default type resolvers that apply to ALL subgraphs
+ *    - Used when a subgraph doesn't define a specific mock for a type
+ *    - Provides consistent fallback values across all subgraphs
+ *
+ * 2. [subgraphName]: Subgraph-specific type resolvers
+ *    - Each subgraph can override global mocks with its own implementations
+ *    - Subgraph-specific types (e.g., Product, User, Order) are defined here
+ *
+ * PRECEDENCE RULES:
+ * -----------------
+ * When resolving a mock for a type in a specific subgraph:
+ * 1. First, check if subgraph has a specific mock for the type
+ * 2. If not found, fall back to _globals mock for that type
+ * 3. If still not found, use graphql-tools/mock default mock behavior
+ *
+ * Example:
+ * - Request to 'products' subgraph for an 'Int' → uses products.Int (if defined)
+ * - If products.Int doesn't exist → uses _globals.Int
+ * - Request for 'Product' type → uses products.Product (subgraph-specific)
+ *
+ */
+
+export const mocks = {
+  /**
+   * GLOBAL TYPE RESOLVERS
+   *
+   * These mocks apply to all subgraphs by default unless overridden.
+   * Common scalar types and standard patterns should be defined here.
+   */
+  _globals: {
+    // Scalar Types
+    ID: () => `default-id-${Math.random().toString(36).substring(2, 9)}`,
+    DateTime: () => new Date().toISOString(),
+  },
+
+  /**
+   * PRODUCTS SUBGRAPH
+   *
+   * Mock resolvers for the products subgraph.
+   * Handles product catalog, inventory, and related operations.
+   */
+  products: {
+    // Override global Int for products-specific IDs
+    Int: () => Math.floor(Math.random() * 10000),
+
+    // Override global String for product-specific text
+    String: () => 'Product Default String',
+
+    // Product entity - primary type for this subgraph
+    Product: () => ({
+      // id: `product-${Math.floor(Math.random() * 1000)}`,
+      name: () => `Product ${Math.floor(Math.random() * 1000)}`,
+    }),
+
+  },
+
+};

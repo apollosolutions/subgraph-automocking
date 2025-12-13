@@ -1,0 +1,21 @@
+# Simple supergraph configuration meant for use with `rover dev`
+# Use the `yarn run router:dev` command to start the router with this configuration adapted for the mocking proxy enabled
+# See the run-with-proxy.sh script for more details
+subgraphs:
+  accounts:
+    routing_url: https://accounts.demo.starstuff.dev/
+    schema:
+      subgraph_url: https://accounts.demo.starstuff.dev/
+  inventory:
+    routing_url: https://inventory.demo.starstuff.dev/
+    schema:
+      subgraph_url: https://inventory.demo.starstuff.dev/
+  products:
+    routing_url: https://products.demo.starstuff.dev/
+    schema:
+      subgraph_url: https://products.demo.starstuff.dev/
+  reviews:
+    routing_url: https://reviews.demo.starstuff.dev/
+    schema:
+      subgraph_url: https://reviews.demo.starstuff.dev/
+federation_version: =2.8.0
