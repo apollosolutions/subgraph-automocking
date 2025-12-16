@@ -30,6 +30,18 @@ For development with `rover dev`, add configuration to [router/config/supergraph
 
 > When running `rover dev` with local introspection (file or url), you will need to duplicate the configuration in `config/subgraphs.js` to point at the same file or url to allow the mocking proxy to cache the same subgraph schema. A script could be built to construct the configuration if copying the config becomes burdensome. See the [example subgraph config](config/subgraphs.js.example) as a template.
 
+### Yarn and vscode/cursor/windsurf
+If you're having problems with IDEs not finding packages, please run:
+```bash
+yarn dlx @yarnpkg/sdks vscode
+```
+
+and update your workspace settings json with the following entries: 
+```json
+  "eslint.nodePath": ".yarn/sdks",
+  "typescript.tsdk": ".yarn/sdks/typescript/lib",
+```
+
 
 ## Usage
 Once installed, you can start the proxy server with:
@@ -157,6 +169,7 @@ The proxy supports two schema sources:
 #### 1. Local Introspection (`useLocalSchema: true`)
 
 - Introspects GraphQL schema directly from subgraph's URL or from a graphql schema file
+- **Precedence:** A local file takes precedence over an introspection url. If the introspection url is set but not available, the schema registry will use the remote schema if available.
 - Automatic retry logic with configurable attempts
 - 10-second timeout for introspection queries
 - **Best for:** Local development with running subgraphs
