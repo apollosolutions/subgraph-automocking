@@ -34,6 +34,12 @@ const SubgraphConfigItemSchema = z.object({
     message: 'forceMock and disableMocking cannot both be true',
     path: ['forceMock', 'disableMocking'],
   }
+).refine(
+  (config) => !(config.useLocalSchema && !config.url && !config.schemaFile),
+  {
+    message: 'useLocalSchema cannot be true without a url or schemaFile',
+    path: ['useLocalSchema', 'url', 'schemaFile'],
+  }
 );
 
 /**

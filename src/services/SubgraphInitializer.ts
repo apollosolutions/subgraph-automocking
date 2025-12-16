@@ -153,18 +153,36 @@ export class SubgraphInitializer {
 
     // Apply local configuration overrides
     for (const [name, subgraphConfig] of Object.entries(localConfig.subgraphs)) {
+      // Find the Apollo subgraph for this name to get its URL if needed
+      const apolloSubgraph = apolloSubgraphs.find(s => s.name === name);
+      const apolloUrl = apolloSubgraph?.url || undefined;
 
-      const url = subgraphConfig.url;
+      // Determine final URL:
+      // use local URL if provided
+      // otherwise fallback to Apollo URL
+      let finalUrl = subgraphConfig.url;
+      if (!finalUrl && apolloUrl) {
+        finalUrl = apolloUrl;
+        logger.info({
+          name,
+          apolloUrl
+        }, '[SubgraphInitializer] Using Apollo registry URL for local override (no url or schemaFile in local config)');
+      } else if (!finalUrl && !apolloUrl) {
+        logger.warn({
+          name
+        }, `[SubgraphInitializer] No URL found for subgraph: ${name} - will mock if schema available`);
+      }
+
       // Unregister the Apollo version
       this.registry.unregisterSubgraph(name);
 
       // Re-register with local configuration
-      this.registry.registerSubgraph(name, url, subgraphConfig);
-      this.schemaCache.setSubgraphConfig(name, url, subgraphConfig);
+      this.registry.registerSubgraph(name, finalUrl, subgraphConfig);
+      this.schemaCache.setSubgraphConfig(name, finalUrl, subgraphConfig);
 
       logger.info({
         name,
-        url,
+        url: finalUrl,
         forceMock: subgraphConfig.forceMock,
         useLocalSchema: subgraphConfig.useLocalSchema,
         schemaFile: subgraphConfig.schemaFile

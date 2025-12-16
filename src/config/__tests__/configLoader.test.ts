@@ -33,6 +33,7 @@ export const config = {
     products: {
       useLocalSchema: true,
       maxRetries: 3,
+      url: 'http://localhost:4001',
     },
   },
 };
@@ -175,6 +176,7 @@ export const config = {
   subgraphs: {
     products: {
       useLocalSchema: true,
+      url: 'http://localhost:4001',
     },
     reviews: {
       forceMock: true,

@@ -304,6 +304,113 @@ describe('SubgraphInitializer', () => {
       expect(callsWithConfig.length).toBeGreaterThan(0);
       expect(callsWithConfig[0][1]).toBe(localConfigForProducts.subgraphs.products.url);
     });
+
+    it('should fallback to Apollo URL when local config has no url or schemaFile', async () => {
+      const apolloSubgraphsWithUrl = [
+        { name: 'products', url: 'http://apollo-products:4001/graphql' },
+      ];
+
+      const localConfigWithoutUrl = {
+        subgraphs: {
+          products: {
+            forceMock: true,
+            useLocalSchema: false,
+            maxRetries: 3,
+            retryDelayMs: 1000,
+            healthCheckIntervalMs: 30000,
+            disableMocking: false,
+          } as SubgraphConfigItem,
+        },
+      };
+
+      vi.mocked(mockApolloClient.listSubgraphs).mockResolvedValue(apolloSubgraphsWithUrl);
+      vi.mocked(loadSubgraphConfig).mockResolvedValue(localConfigWithoutUrl);
+      vi.mocked(mockRegistry.getSubgraphCount).mockReturnValue(1);
+
+      await initializer.initialize();
+
+      // Should first register with Apollo URL
+      expect(mockRegistry.registerSubgraph).toHaveBeenCalledWith('products', 'http://apollo-products:4001/graphql');
+
+      // Then unregister and re-register with Apollo URL (since no local url or schemaFile)
+      expect(mockRegistry.unregisterSubgraph).toHaveBeenCalledWith('products');
+
+      const callsWithConfig = vi.mocked(mockRegistry.registerSubgraph).mock.calls.filter(
+        call => call[2] !== undefined
+      );
+
+      expect(callsWithConfig.length).toBeGreaterThan(0);
+      expect(callsWithConfig[0][1]).toBe('http://apollo-products:4001/graphql');
+    });
+
+    it('should use local url when provided and useLocalSchema is true even if Apollo has different URL', async () => {
+      const apolloSubgraphsWithUrl = [
+        { name: 'products', url: 'http://apollo-products:4001/graphql' },
+      ];
+
+      const localConfigWithUrl = {
+        subgraphs: {
+          products: {
+            url: 'http://localhost:4001/graphql',
+            forceMock: false,
+            useLocalSchema: true,
+            maxRetries: 3,
+            retryDelayMs: 1000,
+            healthCheckIntervalMs: 30000,
+            disableMocking: false,
+          } as SubgraphConfigItem,
+        },
+      };
+
+      vi.mocked(mockApolloClient.listSubgraphs).mockResolvedValue(apolloSubgraphsWithUrl);
+      vi.mocked(loadSubgraphConfig).mockResolvedValue(localConfigWithUrl);
+      vi.mocked(mockRegistry.getSubgraphCount).mockReturnValue(1);
+
+      await initializer.initialize();
+
+      // Should use local URL, not Apollo URL
+      const callsWithConfig = vi.mocked(mockRegistry.registerSubgraph).mock.calls.filter(
+        call => call[2] !== undefined
+      );
+
+      expect(callsWithConfig.length).toBeGreaterThan(0);
+      expect(callsWithConfig[0][1]).toBe('http://localhost:4001/graphql');
+    });
+
+    it('should fallback to Apollo URL when local config has schemaFile but no url', async () => {
+      const apolloSubgraphsWithUrl = [
+        { name: 'products', url: 'http://apollo-products:4001/graphql' },
+      ];
+
+      const localConfigWithSchemaFile = {
+        subgraphs: {
+          products: {
+            schemaFile: 'products.graphql',
+            forceMock: true,
+            useLocalSchema: true,
+            maxRetries: 3,
+            retryDelayMs: 1000,
+            healthCheckIntervalMs: 30000,
+            disableMocking: false,
+          } as SubgraphConfigItem,
+        },
+      };
+
+      vi.mocked(mockApolloClient.listSubgraphs).mockResolvedValue(apolloSubgraphsWithUrl);
+      vi.mocked(loadSubgraphConfig).mockResolvedValue(localConfigWithSchemaFile);
+      vi.mocked(mockRegistry.getSubgraphCount).mockReturnValue(1);
+
+      await initializer.initialize();
+
+      // Should use Apollo URL since schemaFile is provided but no url
+      const callsWithConfig = vi.mocked(mockRegistry.registerSubgraph).mock.calls.filter(
+        call => call[1] === apolloSubgraphsWithUrl[0].url
+      );
+
+      // total of 2 calls, one for the apollo config and one for the local config
+      // both calls should have the Apollo URL which will only be the case if length is 2
+      expect(callsWithConfig.length).toBe(2);
+    });
   });
 
   describe('initialization phases', () => {

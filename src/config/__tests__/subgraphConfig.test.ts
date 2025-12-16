@@ -15,6 +15,7 @@ describe('subgraphConfig', () => {
             useLocalSchema: true,
             maxRetries: 3,
             retryDelayMs: 1000,
+            url: 'http://localhost:4001',
           },
         },
       };
@@ -42,20 +43,6 @@ describe('subgraphConfig', () => {
       expect(result.subgraphs.products.healthCheckIntervalMs).toBe(30000);
     });
 
-    it('should set useLocalSchema based on explicit configuration', () => {
-      const config = {
-        subgraphs: {
-          products: {
-            useLocalSchema: true,
-          },
-        },
-      };
-
-      const result = validateSubgraphConfig(config);
-
-      expect(result.subgraphs.products.useLocalSchema).toBe(true);
-    });
-
     it('should reject forceMock and disableMocking both true', () => {
       const invalidConfig = {
         subgraphs: {
@@ -67,6 +54,44 @@ describe('subgraphConfig', () => {
       };
 
       expect(() => validateSubgraphConfig(invalidConfig)).toThrow();
+    });
+
+    it('should reject useLocalSchema without a url or schemaFile', () => {
+      const invalidConfig = {
+        subgraphs: {
+          products: {
+            useLocalSchema: true,
+          },
+        },
+      };
+
+      expect(() => validateSubgraphConfig(invalidConfig)).toThrow();
+    });
+
+    it('should accept useLocalSchema with a url', () => {
+      const validConfig = {
+        subgraphs: {
+          products: {
+            useLocalSchema: true,
+            url: 'http://localhost:4001',
+          },
+        },
+      };
+
+      expect(() => validateSubgraphConfig(validConfig)).not.toThrow();
+    });
+
+    it('should accept useLocalSchema with a schemaFile', () => {
+      const validConfig = {
+        subgraphs: {
+          products: {
+            useLocalSchema: true,
+            schemaFile: 'products.graphql',
+          },
+        },
+      };
+
+      expect(() => validateSubgraphConfig(validConfig)).not.toThrow();
     });
 
     it('should reject maxRetries out of range', () => {
