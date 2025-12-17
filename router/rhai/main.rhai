@@ -70,9 +70,6 @@ fn subgraph_service(service, subgraph) {
     } else {
         log_info("Mocking proxy disabled - using direct subgraph URLs");
     }
-    service.map_response(|res| {
-        print(res.body.errors);
-    })
 }
 
 fn extract_url_details(url) {
