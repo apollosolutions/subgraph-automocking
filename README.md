@@ -81,7 +81,8 @@ APOLLO_GRAPH_REF=$APOLLO_GRAPH_ID@$APOLLO_GRAPH_VARIANT ./router -c config/route
 
 ## Known Limitations
 1. There is duplicitive configuration required when running with local introspection and `rover dev`.
-2. This tool is currently run as a proxy between the router and the subgraphs. The primitives are available to optionally run the tool as a coprocessor.
+2. This tool is currently run as a proxy between the router and the subgraphs. The primitives are available to run the tool as a coprocessor.
+3. Current mocking does not handle entities particularly well since it doesn't respect ids across subgraphs.
 
 ## Configuration
 
