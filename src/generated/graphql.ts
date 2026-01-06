@@ -162,6 +162,8 @@ export type ApiKey = {
   id: Scalars['ID']['output'];
   /** The API key's name, for distinguishing it from other keys. */
   keyName?: Maybe<Scalars['String']['output']>;
+  /** The timestamp when the API key was last used for authentication, if available. */
+  lastUsed?: Maybe<Scalars['Timestamp']['output']>;
   /** The value of the API key. **This is a secret credential!** */
   token: Scalars['String']['output'];
 };
@@ -1985,6 +1987,8 @@ export type GraphApiKey = ApiKey & {
   id: Scalars['ID']['output'];
   /** The API key's name, for distinguishing it from other keys. */
   keyName?: Maybe<Scalars['String']['output']>;
+  /** The timestamp when the API key was last used for authentication, if available. */
+  lastUsed?: Maybe<Scalars['Timestamp']['output']>;
   /** The permission level assigned to the API key upon creation. */
   role: UserPermission;
   /** The value of the API key. **This is a secret credential!** */
@@ -2551,6 +2555,8 @@ export type GraphOsKey = ApiKey & {
   id: Scalars['ID']['output'];
   /** The API key's name, for distinguishing it from other keys. */
   keyName?: Maybe<Scalars['String']['output']>;
+  /** The timestamp when the API key was last used for authentication, if available. */
+  lastUsed?: Maybe<Scalars['Timestamp']['output']>;
   /** Permissions associated with this API key, defining what actions it can perform. */
   resources: Array<ApiKeyResource>;
   /** The value of the API key. **This is a secret credential!** */
@@ -6230,6 +6236,8 @@ export type UserApiKey = ApiKey & {
   id: Scalars['ID']['output'];
   /** The API key's name, for distinguishing it from other keys. */
   keyName?: Maybe<Scalars['String']['output']>;
+  /** The timestamp when the API key was last used for authentication, if available. */
+  lastUsed?: Maybe<Scalars['Timestamp']['output']>;
   /** The value of the API key. **This is a secret credential!** */
   token: Scalars['String']['output'];
 };
