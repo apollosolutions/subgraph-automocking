@@ -59,7 +59,7 @@
     "@vitest/coverage-v8": "^4.0.13",
     "@vitest/ui": "^4.0.13",
     "eslint": "^9.39.1",
-    "globals": "^16.5.0",
+    "globals": "^17.0.0",
     "html-escaper": "^3.0.3",
     "no-case": "^4.0.0",
     "pascal-case": "^4.0.0",
